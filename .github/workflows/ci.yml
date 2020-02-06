@@ -14,7 +14,7 @@ jobs:
   printenv:
     runs-on: ubuntu-latest
     steps:
-      run: env
+      - run: env
 
   purebump:
     name: Ensure package bumps are pure
