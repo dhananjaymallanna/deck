@@ -25,6 +25,7 @@ for PKGJSON in */package.json ; do
   echo "Checking $MODULE"
   echo "==================================================="
   HAS_PKG_BUMP=$(git diff "$TARGET_BRANCH" -- "$PKGJSON" | grep -c '"version"')
+  [[ $? -ne 0 ]] && exit 1
   if [ "$HAS_PKG_BUMP" -ne 0 ] ; then
     echo " [ YES  ] $PKGJSONCHANGED"
 
@@ -47,6 +48,7 @@ for PKGJSON in */package.json ; do
 
     # checking that the only files changed are app/scripts/modules/*/package.json
     OTHER_FILES_CHANGED=$(git diff --name-only "$TARGET_BRANCH" | grep -v -c "app/scripts/modules/.*/package.json")
+    [[ $? -ne 0 ]] && exit 1
     if [ "$OTHER_FILES_CHANGED" -ne 0 ] ; then
       echo " [ FAIL ] $ONLYPKGJSONCHANGED"
       echo ""
