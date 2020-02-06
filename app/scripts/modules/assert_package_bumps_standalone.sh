@@ -9,11 +9,13 @@ if [[ $GITHUB_ACTIONS == "true" && ( $GITHUB_BASE_REF != "master" || $GITHUB_REP
   exit 0
 fi
 
-cd "$(dirname "$0")" || exit 1;
 
 if [[ $GITHUB_ACTIONS == "true" ]] ; then
   echo "Fetching tags..." && git fetch -q
   GHA_TARGET=origin/master
+  cd app/scripts/modules || exit 1;
+else
+  cd "$(dirname "$0")" || exit 1;
 fi
 
 # Use the command line argument, origin/master (if running on GHA) or master (in that order)
