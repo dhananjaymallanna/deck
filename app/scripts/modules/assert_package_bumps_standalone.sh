@@ -1,16 +1,22 @@
 #!/bin/bash
+# Usage: assert_pacakge_bumps_standalone [target branch]
+# Use [target branch] to change the branch the script checks for changes against (default: origin/master)
+
 # Reports if package bumps are combined with other changes (not allowed). Package bumps must be standalone.
 cd "$(dirname "$0")" || exit 1;
+
+TARGET_BRANCH=${1}
+TARGET_BRANCH=${TARGET_BRANCH:-origin/master}
 
 PKGJSONCHANGED="Version change detected in package.json"
 ONLYVERSIONCHANGED="Version change must be the only line changed in package.json"
 ONLYPKGJSONCHANGED="package.json (in app/scripts/modules) must be the only files changed in a pull request with version bumps"
 
-TARGET_BRANCH=origin/master
 echo "TARGET_BRANCH=$TARGET_BRANCH"
 
 # Tests are run against an ephemeral merge commit so we don't have to merge in $TARGET_BRANCH
 
+PUREBUMP=none
 for PKGJSON in */package.json ; do
   MODULE=$(basename "$(dirname "$PKGJSON")")
   echo "::group::Checking $MODULE"
@@ -35,10 +41,9 @@ for PKGJSON in */package.json ; do
       echo ""
       echo "=========================================="
       exit 2
-    else
-      echo " [ PASS ] $ONLYVERSIONCHANGED"
-      echo "::endgroup::"
     fi
+
+    echo " [ PASS ] $ONLYVERSIONCHANGED"
 
     # checking that the only files changed are app/scripts/modules/*/package.json
     OTHER_FILES_CHANGED=$(git diff --name-only "$TARGET_BRANCH" | grep -v -c "app/scripts/modules/.*/package.json")
@@ -53,9 +58,11 @@ for PKGJSON in */package.json ; do
       echo ""
       echo "==========================================="
       exit 1
-    else
-      echo " [ PASS ] $ONLYPKGJSONCHANGED"
     fi
+    # at least one pure bump found
+    PUREBUMP=true
+    echo " [ PASS ] $ONLYPKGJSONCHANGED"
+    echo "::endgroup::"
   else
     echo " [  NO  ] $PKGJSONCHANGED"
     echo " [  N/A ] $ONLYVERSIONCHANGED"
@@ -64,3 +71,4 @@ for PKGJSON in */package.json ; do
   echo ""
 done
 
+export PUREBUMP
