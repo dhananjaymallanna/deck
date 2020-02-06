@@ -5,8 +5,10 @@
 # Reports if package bumps are combined with other changes (not allowed). Package bumps must be standalone.
 cd "$(dirname "$0")" || exit 1;
 
+# Use the command line argument, the GITHUB_BASE_REF, or 'master' (in that order)
 TARGET_BRANCH=${1}
-TARGET_BRANCH=${TARGET_BRANCH:-origin/master}
+TARGET_BRANCH=${TARGET_BRANCH:-${GITHUB_BASE_REF}}
+TARGET_BRANCH=${TARGET_BRANCH:-master}
 
 PKGJSONCHANGED="Version change detected in package.json"
 ONLYVERSIONCHANGED="Version change must be the only line changed in package.json"
