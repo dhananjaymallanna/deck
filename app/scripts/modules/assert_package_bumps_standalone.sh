@@ -15,7 +15,7 @@ if [[ $GITHUB_ACTIONS == "true" ]] ; then
   GHA_TARGET=origin/master
 fi
 
-# Use the command line argument, the GITHUB_BASE_REF, or 'master' (in that order)
+# Use the command line argument, origin/master (if running on GHA) or master (in that order)
 TARGET_BRANCH=${1}
 TARGET_BRANCH=${TARGET_BRANCH:-${GHA_TARGET}}
 TARGET_BRANCH=${TARGET_BRANCH:-master}
@@ -36,8 +36,8 @@ for PKGJSON in */package.json ; do
   echo "==================================================="
   echo "Checking $MODULE"
   echo "==================================================="
-  HAS_PKG_BUMP=$(git diff "$TARGET_BRANCH" -- "$PKGJSON" | grep -c '"version"')
-  [[ $? -ne 0 ]] && exit 1
+  HAS_PKG_BUMP=$(git diff "$TARGET_BRANCH" -- "$PKGJSON" | grep '"version"' | wc -l)
+  [[ $? -ne 0 ]] && exit 2
   if [ "$HAS_PKG_BUMP" -ne 0 ] ; then
     echo " [ YES  ] $PKGJSONCHANGED"
 
@@ -53,14 +53,14 @@ for PKGJSON in */package.json ; do
       git diff "$TARGET_BRANCH" -- "$PKGJSON"
       echo ""
       echo "=========================================="
-      exit 2
+      exit 3
     fi
 
     echo " [ PASS ] $ONLYVERSIONCHANGED"
 
     # checking that the only files changed are app/scripts/modules/*/package.json
-    OTHER_FILES_CHANGED=$(git diff --name-only "$TARGET_BRANCH" | grep -v -c "app/scripts/modules/.*/package.json")
-    [[ $? -ne 0 ]] && exit 1
+    OTHER_FILES_CHANGED=$(git diff --name-only "$TARGET_BRANCH" | grep -v "app/scripts/modules/.*/package.json" | wc -l)
+    [[ $? -ne 0 ]] && exit 4
     if [ "$OTHER_FILES_CHANGED" -ne 0 ] ; then
       echo " [ FAIL ] $ONLYPKGJSONCHANGED"
       echo ""
@@ -71,7 +71,7 @@ for PKGJSON in */package.json ; do
       git diff --name-only "$TARGET_BRANCH"
       echo ""
       echo "==========================================="
-      exit 1
+      exit 5
     fi
     # at least one pure bump found
     PUREBUMP=true
