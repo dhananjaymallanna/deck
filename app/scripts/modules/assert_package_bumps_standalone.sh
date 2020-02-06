@@ -5,9 +5,19 @@
 # Reports if package bumps are combined with other changes (not allowed). Package bumps must be standalone.
 cd "$(dirname "$0")" || exit 1;
 
+if [[ $GITHUB_ACTIONS == "true" && ( $GITHUB_BASE_REF != "master" || $GITHUB_REPOSITORY != 'spinnaker/deck' ) ]] ; then
+  echo "Not a pull request to master, exiting"
+  exit 0
+fi
+
+if [[ $GITHUB_ACTIONS == "true" ]] ; then
+  echo "Fetching tags..." && git fetch -q
+  GHA_TARGET=origin/master
+fi
+
 # Use the command line argument, the GITHUB_BASE_REF, or 'master' (in that order)
 TARGET_BRANCH=${1}
-TARGET_BRANCH=${TARGET_BRANCH:-${GITHUB_BASE_REF}}
+TARGET_BRANCH=${TARGET_BRANCH:-${GHA_TARGET}}
 TARGET_BRANCH=${TARGET_BRANCH:-master}
 
 PKGJSONCHANGED="Version change detected in package.json"
@@ -15,7 +25,6 @@ ONLYVERSIONCHANGED="Version change must be the only line changed in package.json
 ONLYPKGJSONCHANGED="package.json (in app/scripts/modules) must be the only files changed in a pull request with version bumps"
 
 echo "TARGET_BRANCH=$TARGET_BRANCH"
-git fetch
 
 # Tests are run against an ephemeral merge commit so we don't have to merge in $TARGET_BRANCH
 
