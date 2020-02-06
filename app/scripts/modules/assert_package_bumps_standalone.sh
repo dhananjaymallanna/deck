@@ -15,6 +15,7 @@ ONLYVERSIONCHANGED="Version change must be the only line changed in package.json
 ONLYPKGJSONCHANGED="package.json (in app/scripts/modules) must be the only files changed in a pull request with version bumps"
 
 echo "TARGET_BRANCH=$TARGET_BRANCH"
+git fetch
 
 # Tests are run against an ephemeral merge commit so we don't have to merge in $TARGET_BRANCH
 
