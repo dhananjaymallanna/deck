@@ -1,14 +1,15 @@
 #!/bin/bash
 # Usage: assert_pacakge_bumps_standalone [target branch]
-# Use [target branch] to change the branch the script checks for changes against (default: origin/master)
+# Use [target branch] to change the branch the script checks for changes against
+# (default: origin/master if running in a Github Action, master otherwise)
 
 # Reports if package bumps are combined with other changes (not allowed). Package bumps must be standalone.
-cd "$(dirname "$0")" || exit 1;
-
 if [[ $GITHUB_ACTIONS == "true" && ( $GITHUB_BASE_REF != "master" || $GITHUB_REPOSITORY != 'spinnaker/deck' ) ]] ; then
   echo "Not a pull request to master, exiting"
   exit 0
 fi
+
+cd "$(dirname "$0")" || exit 1;
 
 if [[ $GITHUB_ACTIONS == "true" ]] ; then
   echo "Fetching tags..." && git fetch -q
