@@ -110,6 +110,7 @@ jobs:
 
       - run: app/scripts/modules/assert_package_bumps_standalone.sh --verbose
       - run: export PUREBUMP=$(app/scripts/modules/assert_package_bumps_standalone.sh)
+      - run: env
 
       - uses: actions/setup-node@v1
         if: env.PUREBUMP != 'pure'
