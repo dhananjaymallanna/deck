@@ -95,8 +95,8 @@ for PKGJSON in */package.json ; do
 done
 
 if [[ $VERBOSE == "true" ]] ; then
-  [[ -n $PUREBUMPS ]] && echo "Pure Package Bumps: $PUREBUMPS"
-  [[ -n $NOTBUMPED ]] && echo "Packages not bumped: $NOTBUMPED"
+  [[ -n $PUREBUMPS ]] && verbose "Pure Package Bumps: $PUREBUMPS"
+  [[ -n $NOTBUMPED ]] && verbose "Packages not bumped: $NOTBUMPED"
 else
   [[ -n $PUREBUMPS ]] && echo "pure" || echo "nobump";
 fi
