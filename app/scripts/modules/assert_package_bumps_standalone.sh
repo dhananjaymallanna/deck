@@ -3,6 +3,8 @@
 # Use [target branch] to change the branch the script checks for changes against
 # (default: origin/master if running in a Github Action, master otherwise)
 
+set -o pipefail
+
 error() {
   echo $* >&2
 }
@@ -46,6 +48,7 @@ error "TARGET_BRANCH=$TARGET_BRANCH"
 PUREBUMPS=""
 NOTBUMPED=""
 for PKGJSON in */package.json ; do
+  echo "checking $PKGJSON"
   MODULE=$(basename "$(dirname "$PKGJSON")")
 
   HAS_PKG_BUMP=$(git diff "$TARGET_BRANCH" -- "$PKGJSON" | grep '"version"' | wc -l)
