@@ -19,6 +19,7 @@ fi
 
 if [[ "$1" == "--verbose" ]] ; then
   VERBOSE=true
+  shift;
 fi
 
 if [[ $GITHUB_ACTIONS == "true" ]] ; then
@@ -34,7 +35,7 @@ TARGET_BRANCH=${1}
 TARGET_BRANCH=${TARGET_BRANCH:-${GHA_TARGET}}
 TARGET_BRANCH=${TARGET_BRANCH:-master}
 
-PKGJSONCHANGED="Version change detected"
+PKGJSONCHANGED="Version change found"
 ONLYVERSIONCHANGED="Other changes were found in package.json"
 ONLYPKGJSONCHANGED="package.json (in app/scripts/modules) must be the only files changed in a pull request with version bumps"
 
@@ -55,12 +56,13 @@ for PKGJSON in */package.json ; do
     PKG_JSON_OTHER_CHANGES=$(git diff --numstat "$TARGET_BRANCH" -- "$PKGJSON" | cut -f 1)
     if [ "$PKG_JSON_OTHER_CHANGES" -ne 1 ] ; then
       error "==================================================="
-      error " $PKGJSONCHANGED in $MODULE/package.json"
+      error "$PKGJSONCHANGED in $MODULE/package.json"
+      error "However, other changes were found in package.json"
       error ""
+      error "Version change:"
       git diff -u "$TARGET_BRANCH" -- "$PKGJSON" | grep '"version"' >&2
       error ""
-      error " However, other changes were found in package.json"
-      error " (git diff of package.json)"
+      error "git diff of package.json:"
       error "=========================================="
       git diff "$TARGET_BRANCH" -- "$PKGJSON" >&2
       error "=========================================="
@@ -73,12 +75,13 @@ for PKGJSON in */package.json ; do
     [[ $? -ne 0 ]] && exit 4
     if [ "$OTHER_FILES_CHANGED" -ne 0 ] ; then
       error "==================================================="
-      error " $PKGJSONCHANGED in $MODULE/package.json"
+      error "$PKGJSONCHANGED in $MODULE/package.json"
+      error "However, other files were also changed"
       error ""
+      error "Version change:"
       git diff -u "$TARGET_BRANCH" -- "$PKGJSON" | grep '"version"' >&2
       error ""
-      error " However, other files were also changed"
-      error " (list of all files changed)"
+      error "List of all files changed:"
       error "=========================================="
       git diff --name-only "$TARGET_BRANCH" >&2
       error "=========================================="

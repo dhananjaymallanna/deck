@@ -23,7 +23,7 @@ jobs:
       - uses: actions/checkout@v2
 
       - name: Ensure package bumps are pure
-        run: app/scripts/modules/assert_package_bumps_standalone.sh
+        run: app/scripts/modules/assert_package_bumps_standalone.sh --verbose
 
   test:
     name: Unit tests
