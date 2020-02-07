@@ -31,9 +31,8 @@ jobs:
     steps:
       - uses: actions/checkout@v2
 
-      - name: Ensure package bumps are pure
-        run: export PUREBUMP=$(app/scripts/modules/assert_package_bumps_standalone.sh)
-
+      - run: app/scripts/modules/assert_package_bumps_standalone.sh --verbose
+      - run: export PUREBUMP=$(app/scripts/modules/assert_package_bumps_standalone.sh)
       - run: echo $PUREBUMP
 
       - uses: actions/setup-node@v1
@@ -68,8 +67,8 @@ jobs:
     steps:
       - uses: actions/checkout@v2
 
-      - name: Ensure package bumps are pure
-        run: export PUREBUMP=$(app/scripts/modules/assert_package_bumps_standalone.sh)
+      - run: app/scripts/modules/assert_package_bumps_standalone.sh --verbose
+      - run: export PUREBUMP=$(app/scripts/modules/assert_package_bumps_standalone.sh)
 
       - uses: actions/setup-node@v1
         if: env.PUREBUMP != 'pure'
@@ -109,8 +108,8 @@ jobs:
     steps:
       - uses: actions/checkout@v2
 
-      - name: Ensure package bumps are pure
-        run: export PUREBUMP=$(app/scripts/modules/assert_package_bumps_standalone.sh)
+      - run: app/scripts/modules/assert_package_bumps_standalone.sh --verbose
+      - run: export PUREBUMP=$(app/scripts/modules/assert_package_bumps_standalone.sh)
 
       - uses: actions/setup-node@v1
         if: env.PUREBUMP != 'pure'
